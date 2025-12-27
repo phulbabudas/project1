@@ -1,38 +1,66 @@
 const sql = require("./db")
 
-
-
 const createTable = async () => {
-  await sql`
-    CREATE TABLE IF NOT EXISTS users (
-      id SERIAL PRIMARY KEY,
-      name TEXT NOT NULL,
-      email TEXT UNIQUE NOT NULL,
-      age INTEGER,
-      rollNo INTEGER
-    )
-  `;
+  try {
+    await sql`
+      CREATE TABLE IF NOT EXISTS users (
+        id SERIAL PRIMARY KEY,
+        name TEXT NOT NULL,
+        email TEXT UNIQUE NOT NULL,
+        age INTEGER,
+        rollNo INTEGER
+      )
+    `;
+    console.log("Table created successfully");
+  } catch (error) {
+    console.error("Error creating table:", error.message);
+    throw error;
+  }
 }
 const insert = async (name, email, age,rollNo) => {
-  const user = await sql`
-    INSERT INTO users (name, email, age,rollNo)
-    VALUES (${name}, ${email}, ${age},${rollNo})
-    RETURNING *;
-  `;
-
-  return user
+  try {
+    const user = await sql`
+      INSERT INTO users (name, email, age,rollNo)
+      VALUES (${name}, ${email}, ${age},${rollNo})
+      RETURNING *;
+    `;
+    return user;
+  } catch (error) {
+    console.error("Error inserting user:", error.message);
+    throw error;
+  }
 }
 
 const find = async () => {
-  const users = await sql`SELECT * FROM users`;
-  console.log(users);
-  return users;
+  try {
+    const users = await sql`SELECT * FROM users`;
+    console.log(users);
+    return users;
+  } catch (error) {
+    console.error("Error fetching users:", error.message);
+    throw error;
+  }
 }
 
 const findOne = async (id) => {
-   const user = await sql`SELECT * FROM users WHERE id = ${id}`;
-   console.log(user[0]);
-   return user[0];
+  try {
+    const user = await sql`SELECT * FROM users WHERE id = ${id}`;
+    console.log(user[0]);
+    return user[0];
+  } catch (error) {
+    console.error("Error fetching user:", error.message);
+    throw error;
+  }
+}
+const deleteUser = async (id) => {
+  try {
+    const user = await sql`DELETE FROM users WHERE id = ${id}`;
+    console.log(user);
+    return user;
+  } catch (error) {
+    console.error("Error deleting user:", error.message);
+    throw error;
+  }
 }
 
 
@@ -57,5 +85,6 @@ module.exports = {
   createTable,
   insert,
   find,
-  findOne
+  findOne,
+  deleteUser
 }
